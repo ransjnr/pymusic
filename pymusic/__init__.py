@@ -1,0 +1,53 @@
+"""pyMusic — Download music from YouTube, SoundCloud, Spotify, and more."""
+
+from pymusic.core import PyMusic
+from pymusic.config import Config
+from pymusic.models import (
+    AudioFormat,
+    DownloadResult,
+    DownloadStatus,
+    Playlist,
+    SearchResult,
+    Source,
+    Track,
+)
+from pymusic.exceptions import (
+    PyMusicError,
+    DownloadError,
+    UnsupportedURLError,
+    PlaylistError,
+    MetadataError,
+    ConfigurationError,
+    SpotifyAuthError,
+    SearchError,
+    FormatError,
+)
+
+__version__ = "0.1.0"
+__author__ = "pyMusic Contributors"
+__license__ = "MIT"
+
+__all__ = [
+    # Main class
+    "PyMusic",
+    # Config
+    "Config",
+    # Models
+    "Track",
+    "Playlist",
+    "SearchResult",
+    "DownloadResult",
+    "AudioFormat",
+    "Source",
+    "DownloadStatus",
+    # Exceptions
+    "PyMusicError",
+    "DownloadError",
+    "UnsupportedURLError",
+    "PlaylistError",
+    "MetadataError",
+    "ConfigurationError",
+    "SpotifyAuthError",
+    "SearchError",
+    "FormatError",
+]
