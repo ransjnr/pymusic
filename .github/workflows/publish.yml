@@ -44,21 +44,9 @@ jobs:
           name: dist
           path: dist/
 
-      - name: Install twine
-        run: pip install "twine>=5.0"
-
       - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          set +e
-          OUTPUT=$(twine upload --skip-existing --verbose dist/* 2>&1)
-          EXIT_CODE=$?
-          echo "$OUTPUT"
-          if [ $EXIT_CODE -ne 0 ]; then
-            echo "$OUTPUT" | grep -iE "error|fail|forbidden|unauthorized|bad request|invalid|4[0-9]{2}|5[0-9]{2}" | head -10 | while read -r line; do
-              echo "::error::$line"
-            done
-          fi
-          exit $EXIT_CODE
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true
+          attestations: false
