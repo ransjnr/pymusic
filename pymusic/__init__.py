@@ -1,4 +1,4 @@
-"""pyMusic — Download music from YouTube, SoundCloud, Spotify, and more."""
+"""pymusic-downloader — Download music from YouTube, SoundCloud, Spotify, and more."""
 
 from pymusic.core import PyMusic
 from pymusic.config import Config
@@ -26,6 +26,8 @@ from pymusic.exceptions import (
 __version__ = "0.1.0"
 __author__ = "pyMusic Contributors"
 __license__ = "MIT"
+__package_name__ = "pymusic-downloader"
+__url__ = "https://github.com/ransjnr/pymusic"
 
 __all__ = [
     # Main class
