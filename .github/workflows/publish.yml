@@ -44,36 +44,11 @@ jobs:
           name: dist
           path: dist/
 
-      - name: List dist contents
-        run: ls -la dist/
-
       - name: Install twine
         run: pip install twine
-
-      - name: Diagnose token
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          if [ -z "$PYPI_TOKEN" ]; then
-            echo "ERROR: PYPI_API_TOKEN secret is empty or not set!"
-            exit 1
-          fi
-          echo "Token length: ${#PYPI_TOKEN}"
-          echo "Token prefix: ${PYPI_TOKEN:0:10}..."
 
       - name: Publish to PyPI
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          set +e
-          twine upload --verbose dist/* 2>&1 | tee /tmp/twine_output.txt
-          EXIT_CODE=${PIPESTATUS[0]}
-          exit $EXIT_CODE
-
-      - name: Upload error log
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: twine-error-log
-          path: /tmp/twine_output.txt
+        run: twine upload --skip-existing dist/*
