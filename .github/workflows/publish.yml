@@ -57,4 +57,12 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload --verbose dist/*
+        run: |
+          set +e
+          twine upload --verbose dist/* 2>&1 | tee /tmp/twine_output.txt
+          EXIT_CODE=${PIPESTATUS[0]}
+          echo "## Twine Upload Output" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/twine_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          exit $EXIT_CODE
