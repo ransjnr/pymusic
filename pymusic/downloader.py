@@ -134,7 +134,17 @@ def download_track(
     except yt_dlp.utils.DownloadError as exc:
         track.status = DownloadStatus.FAILED
         track.error = str(exc)
-        raise DownloadError(str(exc), url=track.url, cause=exc) from exc
+        msg = str(exc)
+        if "ffprobe and ffmpeg not found" in msg or "ffmpeg" in msg.lower():
+            raise DownloadError(
+                "ffmpeg is required for audio conversion but was not found.\n"
+                "  macOS:          brew install ffmpeg\n"
+                "  Ubuntu/Debian:  sudo apt install ffmpeg\n"
+                "  Windows:        https://ffmpeg.org/download.html",
+                url=track.url,
+                cause=exc,
+            ) from exc
+        raise DownloadError(msg, url=track.url, cause=exc) from exc
 
     # Resolve the actual file path (extension may change after conversion)
     resolved = _find_output_file(out_dir if not (config.create_subdirs and safe_artist) else None,
