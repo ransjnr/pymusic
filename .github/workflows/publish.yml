@@ -52,7 +52,14 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
-          echo "Token length: ${#TWINE_PASSWORD}"
-          echo "Token prefix: ${TWINE_PASSWORD:0:12}..."
-          twine upload --skip-existing --verbose dist/* 2>&1
-          echo "Exit code: $?"
+          set +e
+          OUTPUT=$(twine upload --skip-existing --verbose dist/* 2>&1)
+          EXIT_CODE=$?
+          echo "$OUTPUT"
+          if [ $EXIT_CODE -ne 0 ]; then
+            # Extract key error lines and emit as annotations
+            echo "$OUTPUT" | grep -iE "error|fail|forbidden|unauthorized|bad request|4[0-9]{2}" | while read -r line; do
+              echo "::error::$line"
+            done
+          fi
+          exit $EXIT_CODE
