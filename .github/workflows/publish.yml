@@ -69,8 +69,11 @@ jobs:
           set +e
           twine upload --verbose dist/* 2>&1 | tee /tmp/twine_output.txt
           EXIT_CODE=${PIPESTATUS[0]}
-          echo "## Twine Upload Output" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat /tmp/twine_output.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
           exit $EXIT_CODE
+
+      - name: Upload error log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: twine-error-log
+          path: /tmp/twine_output.txt
