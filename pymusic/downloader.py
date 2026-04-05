@@ -17,21 +17,20 @@ from pymusic.utils import build_output_path, sanitize_filename, ensure_dir
 logger = logging.getLogger(__name__)
 
 
-def _get_ffmpeg_location() -> Optional[str]:
-    """Return path to ffmpeg binary directory, preferring system ffmpeg.
+def _ensure_ffmpeg() -> None:
+    """Ensure ffmpeg and ffprobe are on PATH, using bundled binaries if needed.
 
-    Falls back to the imageio-ffmpeg bundled binary so that users do not
-    need to install ffmpeg separately.
+    static-ffmpeg ships both ffmpeg and ffprobe as static binaries for
+    macOS, Linux, and Windows so users never need to install them manually.
     """
-    if shutil.which("ffmpeg"):
-        return None  # already on PATH — let yt-dlp find it automatically
+    if shutil.which("ffmpeg") and shutil.which("ffprobe"):
+        return  # already available — nothing to do
 
     try:
-        import imageio_ffmpeg  # bundled via imageio-ffmpeg dependency
-        exe = imageio_ffmpeg.get_ffmpeg_exe()
-        return str(Path(exe).parent)
+        import static_ffmpeg  # bundled via static-ffmpeg dependency
+        static_ffmpeg.add_paths()  # adds ffmpeg + ffprobe to PATH
     except Exception:
-        return None
+        pass
 
 
 class ProgressHook:
@@ -63,6 +62,7 @@ def build_ydl_opts(
     extra_opts: Optional[Dict[str, Any]] = None,
 ) -> dict:
     """Build the yt-dlp options dictionary."""
+    _ensure_ffmpeg()  # guarantee ffmpeg + ffprobe are on PATH before yt-dlp runs
     opts = {
         "quiet": config.quiet,
         "verbose": config.verbose,
@@ -102,11 +102,6 @@ def build_ydl_opts(
 
     # Overwrite protection
     opts["nooverwrites"] = not config.overwrite
-
-    # ffmpeg location — use system ffmpeg if available, else bundled binary
-    ffmpeg_loc = _get_ffmpeg_location()
-    if ffmpeg_loc:
-        opts["ffmpeg_location"] = ffmpeg_loc
 
     # Merge extra options
     if extra_opts:
