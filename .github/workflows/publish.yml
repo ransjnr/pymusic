@@ -51,4 +51,8 @@ jobs:
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload --skip-existing dist/*
+        run: |
+          echo "Token length: ${#TWINE_PASSWORD}"
+          echo "Token prefix: ${TWINE_PASSWORD:0:12}..."
+          twine upload --skip-existing --verbose dist/* 2>&1
+          echo "Exit code: $?"
