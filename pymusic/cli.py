@@ -422,5 +422,48 @@ def _print_playlist_result(playlist: Playlist, quiet: bool):
             click.echo(f"  - {t.display_name}: {t.error}")
 
 
+@main.command("server")
+@click.option(
+    "--host", default="127.0.0.1", show_default=True,
+    help="Host to bind the server to.",
+)
+@click.option(
+    "--port", default=6173, show_default=True, type=int,
+    help="Port to listen on.",
+)
+def server_cmd(host, port):
+    """Start the local companion server for the browser extension.
+
+    The extension connects to http://127.0.0.1:6173 to download music
+    directly from your browser.
+
+    \b
+    Usage:
+      pymusic server
+      pymusic server --port 6173
+    """
+    try:
+        import uvicorn  # noqa: F401
+    except ImportError:
+        click.echo(
+            f"{Fore.RED}Error:{Style.RESET_ALL} Server dependencies not installed.\n"
+            "  Run: pip install 'pymusic-downloader[server]'",
+            err=True,
+        )
+        sys.exit(1)
+
+    from pymusic.server import app, PORT
+
+    click.echo(
+        f"\n{Fore.CYAN}pyMusic Server{Style.RESET_ALL} v{__version__}\n"
+        f"  Listening on {Fore.GREEN}http://{host}:{port}{Style.RESET_ALL}\n"
+        f"  Load the browser extension and start downloading!\n"
+        f"  Press {Fore.YELLOW}Ctrl+C{Style.RESET_ALL} to stop.\n"
+    )
+
+    import uvicorn
+    uvicorn.run(app, host=host, port=port, log_level="warning")
+
+
 if __name__ == "__main__":
     main()
