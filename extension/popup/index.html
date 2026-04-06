@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pyMusic</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- ── Header ────────────────────────────────────────────── -->
+    <header class="header">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" fill="url(#logoGrad)"/>
+          <path d="M9 8.5v7M12 7v10M15 9.5v5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="logoGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#8b5cf6"/>
+              <stop offset="100%" stop-color="#ec4899"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span class="logo-text">pyMusic</span>
+      </div>
+      <div class="header-right">
+        <div class="server-badge" id="server-badge">
+          <span class="badge-dot"></span>
+          <span class="badge-label" id="badge-label">connecting</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── No server warning ─────────────────────────────────── -->
+    <div class="no-server" id="no-server" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <p><strong>Server not running</strong></p>
+      <p class="hint">Run this in your terminal:</p>
+      <div class="code-block">
+        <code>pip install 'pymusic-downloader[server]'</code>
+        <code>pymusic server</code>
+      </div>
+    </div>
+
+    <!-- ── Main content (shown when server is up) ────────────── -->
+    <div class="main-content" id="main-content" style="display:none">
+
+      <!-- Current page card -->
+      <div class="page-card" id="page-card">
+        <div class="page-card-inner">
+          <div class="track-thumb-wrap">
+            <img class="track-thumb" id="track-thumb" src="" alt="" style="display:none" />
+            <div class="track-thumb-placeholder" id="track-thumb-placeholder">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="2"/></svg>
+            </div>
+          </div>
+          <div class="track-meta">
+            <div class="track-title" id="track-title">Detecting page…</div>
+            <div class="track-artist" id="track-artist"></div>
+            <div class="track-detail" id="track-detail"></div>
+          </div>
+        </div>
+        <div class="url-input-row">
+          <input type="text" id="url-input" class="url-input" placeholder="Or paste any YouTube / SoundCloud URL…" />
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-row">
+        <div class="select-wrap">
+          <label class="select-label">Format</label>
+          <select id="format-select" class="styled-select">
+            <option value="mp3">MP3</option>
+            <option value="m4a">M4A</option>
+            <option value="flac">FLAC</option>
+            <option value="wav">WAV</option>
+            <option value="ogg">OGG</option>
+          </select>
+        </div>
+        <div class="select-wrap">
+          <label class="select-label">Quality</label>
+          <select id="quality-select" class="styled-select">
+            <option value="320">320 kbps</option>
+            <option value="192" selected>192 kbps</option>
+            <option value="128">128 kbps</option>
+            <option value="96">96 kbps</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="download-btn" id="download-btn" disabled>
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="download-btn-text">Download</span>
+      </button>
+
+      <!-- Progress -->
+      <div class="progress-wrap" id="progress-wrap" style="display:none">
+        <div class="progress-header">
+          <span class="progress-label" id="progress-label">Downloading…</span>
+          <span class="progress-pct" id="progress-pct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="progress-sub" id="progress-sub"></div>
+      </div>
+
+      <!-- Divider -->
+      <div class="divider"><span>Search</span></div>
+
+      <!-- Search -->
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input type="text" id="search-input" class="search-input" placeholder="Search for music…" />
+        </div>
+        <button class="search-btn" id="search-btn">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <div class="search-results" id="search-results"></div>
+
+      <!-- Recent downloads -->
+      <div class="recent-section" id="recent-section" style="display:none">
+        <div class="divider"><span>Recent</span></div>
+        <div class="recent-list" id="recent-list"></div>
+      </div>
+
+    </div><!-- /main-content -->
+
+  </div><!-- /app -->
+
+  <script src="app.js"></script>
+</body>
+</html>
