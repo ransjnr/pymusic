@@ -23,7 +23,7 @@ from pymusic.exceptions import (
     FormatError,
 )
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 __author__ = "pyMusic Contributors"
 __license__ = "MIT"
 __package_name__ = "pymusic-downloader"
